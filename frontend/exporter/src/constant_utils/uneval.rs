@@ -177,7 +177,8 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
     span: rustc_span::Span,
 ) -> ConstantExpr {
     let kind = match (&*valtree, ty.kind()) {
-        (_, ty::Ref(_, inner_ty, _)) => {
+        // TODO(view): Is it sound to ignore view here?
+        (_, ty::Ref(_, inner_ty, _, _view)) => {
             ConstantExprKind::Borrow(valtree_to_constant_expr(s, valtree, *inner_ty, span))
         }
         (ty::ValTreeKind::Branch(valtrees), ty::Str) => {

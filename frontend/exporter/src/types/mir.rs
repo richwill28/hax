@@ -918,7 +918,7 @@ pub enum RuntimeChecks {
 pub enum Rvalue {
     Use(Operand),
     Repeat(Operand, ConstantExpr),
-    Ref(Region, BorrowKind, Place),
+    Ref(Region, BorrowKind, Place, Option<View>),
     ThreadLocalRef(DefId),
     RawPtr(RawPtrKind, Place),
     #[custom_arm(
