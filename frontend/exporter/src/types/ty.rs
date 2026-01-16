@@ -410,17 +410,17 @@ pub struct Region {
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::ViewField<'tcx>, state: S as s)]
-pub struct ViewField {
+pub struct TyViewField {
     pub path: Vec<Symbol>,
     pub mutbl: Mutability,
 }
 
 /// Reflects [`ty::View`]
-pub type View = Vec<ViewField>;
+pub type TyView = Vec<TyViewField>;
 
 #[cfg(feature = "rustc")]
-impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, View> for ty::View<'tcx> {
-    fn sinto(&self, s: &S) -> View {
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, TyView> for ty::View<'tcx> {
+    fn sinto(&self, s: &S) -> TyView {
         self.iter().map(|field| field.sinto(s)).collect()
     }
 }
@@ -1138,7 +1138,7 @@ pub enum TyKind {
     Tuple(ItemRef),
     Str,
     RawPtr(Box<Ty>, Mutability),
-    Ref(Region, Box<Ty>, Mutability, Option<View>),
+    Ref(Region, Box<Ty>, Mutability, Option<TyView>),
     #[custom_arm(FROM_TYPE::Dynamic(preds, region) => make_dyn(s, preds, region),)]
     Dynamic(
         /// Fresh type parameter that we use as the `Self` type in the prediates below.

@@ -1060,6 +1060,25 @@ pub enum FakeBorrowKind {
     Shallow,
 }
 
+/// Reflects [`rustc_middle::mir::ViewField`]
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::mir::ViewField<'tcx>, state: S as s)]
+pub struct ViewField {
+    pub path: Vec<Symbol>,
+    pub kind: BorrowKind,
+}
+
+/// Reflects [`rustc_middle::mir::View`]
+pub type View = Vec<ViewField>;
+
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, View> for rustc_middle::mir::View<'tcx> {
+    fn sinto(&self, s: &S) -> View {
+        self.iter().map(|field| field.sinto(s)).collect()
+    }
+}
+
 sinto_todo!(rustc_ast::ast, InlineAsmTemplatePiece);
 sinto_todo!(rustc_ast::ast, InlineAsmOptions);
 sinto_todo!(rustc_middle::mir, InlineAsmOperand<'tcx>);
